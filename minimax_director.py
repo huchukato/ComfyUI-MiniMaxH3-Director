@@ -428,6 +428,12 @@ class MiniMaxH3Director(io.ComfyNode):
                                 tooltip="Connection-only. Text put in front of the global prompt — LoRA "
                                         "trigger words from a loader node, say. It is part of the "
                                         "`prompt` output, but the panel's live preview cannot see it."),
+                io.String.Input("external_prompt", force_input=True, optional=True, default="",
+                                tooltip="Connection-only. When non-empty, replaces the compiled storyboard "
+                                        "prompt entirely — e.g. a QwenVL-generated prompt. The timeline "
+                                        "still drives media, keyframes, canvas and length; only the text "
+                                        "is overridden. Its <Picture N> labels must match the reference "
+                                        "order the Director actually sends."),
             ],
             outputs=[
                 io.Model.Output(display_name="model"),
@@ -485,7 +491,7 @@ class MiniMaxH3Director(io.ComfyNode):
                 override_audio=False, ref_image_size="match",
                 shift_video=12.0, shift_audio=3.0, ref_images=None, ref_image_notes="",
                 start=None, end=None, duration=None,
-                width=None, height=None, prepend_text="") -> io.NodeOutput:
+                width=None, height=None, prepend_text="", external_prompt="") -> io.NodeOutput:
 
         mm = core()
         tdata = plan.parse_timeline(timeline_data)
@@ -530,7 +536,7 @@ class MiniMaxH3Director(io.ComfyNode):
             log.info("[MiniMaxDirector] %d frames (%.1fs) is below H3's trained range "
                      "(~%d frames / 5s). Fine for tests, weaker motion than a full shot.",
                      length, p["actual_seconds"], plan.TRAINED_MIN_FRAMES)
-        if p["prompt_is_fallback"]:
+        if p["prompt_is_fallback"] and not (external_prompt or "").strip():
             log.warning("[MiniMaxDirector] No prompt text on the timeline — falling back to 'video'.")
         for warning in p.get("ref_warnings") or []:
             log.warning("[MiniMaxDirector] %s", warning)
@@ -663,7 +669,10 @@ class MiniMaxH3Director(io.ComfyNode):
                          "timeline keyframes were added as <Picture i> references instead.")
                 first_frame = last_frame = None
 
-        prompt = p["prompt"]
+        prompt = (external_prompt or "").strip() or p["prompt"]
+        if prompt != p["prompt"]:
+            log.info("[MiniMaxDirector] external prompt override (%d chars) replaces the "
+                     "compiled storyboard prompt", len(prompt))
         log.info("[MiniMaxDirector] %s%s | %dx%d | %d frames (%.2fs @24fps) | %d shots | "
                  "refs: %d img / %d vid / %d audio",
                  p["mode"], " (retake)" if retake else "", width, height, length,

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.3
+
+**External prompt override** — a new connection-only `external_prompt` input. When it carries
+text, it replaces the compiled storyboard prompt entirely (e.g. a QwenVL-generated prompt);
+the timeline still drives media, keyframes, canvas and length — only the text is overridden.
+The `prompt` output returns the final text either way, and the no-prompt fallback warning is
+suppressed while an override is active. The override's `<Picture N>` labels must match the
+reference order the Director actually sends.
+
 ## 0.3.2
 
 **A voice on the subject, not on the timeline** (issue #10). Every subject slot has an

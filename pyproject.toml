@@ -1,7 +1,7 @@
 [project]
 name = "minimaxh3-director"
 description = "A timeline editor for MiniMax H3 — storyboard prompts, first/last keyframes, image/video/audio references, native joint audio, live sampling preview, retakes and shot chaining."
-version = "0.3.2"
+version = "0.3.3"
 license = { file = "LICENSE" }
 requires-python = ">=3.10"
 # Nothing beyond what ComfyUI itself already installs.
