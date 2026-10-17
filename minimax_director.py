@@ -449,10 +449,6 @@ class MiniMaxH3Director(io.ComfyNode):
                 io.String.Output(display_name="retake_info",
                                  tooltip="JSON describing the retake window. Wire into MiniMax H3 Retake Stitch "
                                          "to splice the result back into the base video. Empty when retake is off."),
-                io.String.Output(display_name="timeline_data",
-                                 tooltip="The timeline editor's JSON state, as received. Wire it into "
-                                         "MiniMax H3 Director Chain so a chained render follows this "
-                                         "timeline — one wire keeps the two in sync."),
             ],
         )
 
@@ -764,7 +760,7 @@ class MiniMaxH3Director(io.ComfyNode):
 
         return io.NodeOutput(patched_model, conditioning, latent, audio_out,
                              MODEL_FPS, int(width), int(height), int(length), prompt,
-                             retake_info, timeline_data)
+                             retake_info)
 
 
 NODE_CLASS_MAPPINGS = {"MiniMaxH3DirectorCS": MiniMaxH3Director}

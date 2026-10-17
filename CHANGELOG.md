@@ -1,16 +1,5 @@
 # Changelog
 
-## 0.3.4
-
-**Director Chain is back** — the node that renders a timeline longer than one H3 shot as a
-chain of in-range windows, each opening on the previous window's last frame, is registered
-again. The sampling was always verified; what had it withdrawn was the UX: there was no way
-to hand it a timeline. The Director now exposes a **timeline_data output** — one wire keeps
-the Chain in sync with the timeline editor, no more copy-pasting JSON blobs through
-Properties. The Chain takes a SAMPLER and SIGMAS (it samples internally, window by window),
-plus window_seconds for the per-window length, and returns all windows concatenated as one
-video with audio.
-
 ## 0.3.3
 
 **External prompt override** — a new connection-only `external_prompt` input. When it carries
