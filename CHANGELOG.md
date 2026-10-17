@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.4
+
+**QwenVL-Mod as the Analyze backend** — a new in-process provider. The gear menu's Analyze
+Backend gains "QwenVL-Mod (built-in)": the Analyze button calls the QwenVL-Mod GGUF enhancer
+directly inside this same ComfyUI process — no Ollama, no LM Studio, no HTTP server. The
+Model field takes the GGUF file name, resolved through the same model paths the QwenVL node
+uses; the weights leave VRAM right after answering (keep_model_loaded=False), so they never
+compete with H3 sampling. The HTTP providers (Ollama / LM Studio / Custom) work as before.
+
 ## 0.3.3
 
 **External prompt override** — a new connection-only `external_prompt` input. When it carries

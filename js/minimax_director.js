@@ -12830,6 +12830,7 @@ class TimelineEditor {
       "ollama": { url: "http://127.0.0.1:11434", model: "qwen2.5vl:7b" },
       "lmstudio": { url: "http://127.0.0.1:1234", model: "" },
       "custom": { url: "", model: "" },
+      "qwenvl": { url: "", model: "Qwen3.5-9B-…gguf (file name)" },
     };
 
     if (!this.timeline.analyzeProvider) this.timeline.analyzeProvider = "ollama";
@@ -12840,6 +12841,7 @@ class TimelineEditor {
     provSelect.className = "mmxd-settings-select";
     [
       { v: "off", label: "Off / Manual (no Analyze)" },
+      { v: "qwenvl", label: "QwenVL-Mod (built-in)" },
       { v: "ollama", label: "Ollama" },
       { v: "lmstudio", label: "LM Studio" },
       { v: "custom", label: "Custom (OpenAI-compatible)" },
@@ -12887,7 +12889,8 @@ class TimelineEditor {
       modelInput.value = this.timeline.analyzeModel || "";
       keyInput.value = getAnalyzeApiKey();
       const isOff = (prov === "off");
-      urlRow.style.display = isOff ? "none" : "";
+      const noHttp = (prov === "off" || prov === "qwenvl");
+      urlRow.style.display = noHttp ? "none" : "";
       modelRow.style.display = isOff ? "none" : "";
       // Local servers want no key, so the row would only be one more thing to wonder
       // about; a reverse proxy in front of one is what 'custom' is for.

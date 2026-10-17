@@ -444,6 +444,10 @@ _PROVIDER_DEFAULTS = {
     "ollama": {"url": "http://127.0.0.1:11434", "model": "qwen2.5vl:7b"},
     "lmstudio": {"url": "http://127.0.0.1:1234", "model": ""},
     "custom": {"url": "", "model": ""},
+    # In-process: calls the QwenVL-Mod GGUF enhancer inside this same ComfyUI
+    # process — no HTTP server, no Ollama install. The model field is the GGUF
+    # file name, resolved through the same model paths the node uses.
+    "qwenvl": {"url": "", "model": ""},
 }
 
 # What to look at, per subject kind. A slot is not necessarily a character — the reference
@@ -575,6 +579,55 @@ def strip_thinking(text):
     return text
 
 
+def _qwenvl_module():
+    """The QwenVL-Mod GGUF module, as ComfyUI imported it — or None."""
+    import sys
+    for name, mod in list(sys.modules.items()):
+        if name.split(".")[-1] == "AILab_QwenVL_GGUF" and hasattr(mod, "AILab_QwenVL_GGUF_Advanced"):
+            return mod
+    return None
+
+
+def _qwenvl_generate(images_b64, prompt, system_prompt, model_name, max_tokens):
+    """One Analyze round-trip through the QwenVL-Mod GGUF enhancer, in-process.
+
+    Same machinery the QwenVL_Unified node runs: llama-cpp-python on the GGUF
+    (+ its mmproj) found through the node's own model paths. keep_model_loaded
+    is False, so the weights leave VRAM right after answering — the same
+    contract the HTTP providers get from keep_alive=0.
+    """
+    import random
+    import sys
+
+    mod = _qwenvl_module()
+    if mod is None:
+        raise VLMError("QwenVL-Mod is not loaded in this ComfyUI instance — "
+                       "the qwenvl Analyze backend needs it installed.")
+    if not (model_name or "").strip():
+        raise VLMError("No GGUF model set for the QwenVL-Mod Analyze backend. "
+                       "Enter the GGUF file name in the Director's Analyze settings.")
+
+    tensors = []
+    for b in images_b64:
+        img = Image.open(_io.BytesIO(base64.b64decode(b))).convert("RGB")
+        tensors.append(torch.from_numpy(np.array(img).astype(np.float32) / 255.0)[None, ])
+
+    inst = mod.AILab_QwenVL_GGUF_Advanced()
+    out = inst.process(
+        model_name=model_name.strip(),
+        preset_prompt=system_prompt or "",
+        prompt=prompt or "",
+        max_tokens=int(max_tokens or 1024),
+        keep_model_loaded=False,
+        seed=random.randint(0, 2 ** 31 - 1),
+        keep_last_prompt=False,
+        image=tensors[0] if tensors else None,
+        image2=tensors[1] if len(tensors) > 1 else None,
+        image3=tensors[2] if len(tensors) > 2 else None,
+    )
+    return (out[0] or "").strip()
+
+
 async def vlm_generate(images_b64, prompt, provider, base_url, model,
                        system_prompt=None, timeout=120, keep_alive=0, max_tokens=None,
                        api_key=None):
@@ -594,6 +647,11 @@ async def vlm_generate(images_b64, prompt, provider, base_url, model,
     preamble removed.
     """
     import aiohttp
+
+    if provider == "qwenvl":
+        # In-process: the QwenVL-Mod enhancer runs in this same ComfyUI process.
+        return await asyncio.to_thread(
+            _qwenvl_generate, images_b64, prompt, system_prompt, model, max_tokens)
 
     if provider in ("lmstudio", "custom") and not model:
         raise VLMError("No model name set for %s. Enter the name of the model you have "
