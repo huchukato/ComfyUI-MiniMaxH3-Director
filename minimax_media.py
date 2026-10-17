@@ -603,9 +603,27 @@ def _qwenvl_generate(images_b64, prompt, system_prompt, model_name, max_tokens):
     if mod is None:
         raise VLMError("QwenVL-Mod is not loaded in this ComfyUI instance — "
                        "the qwenvl Analyze backend needs it installed.")
-    if not (model_name or "").strip():
-        raise VLMError("No GGUF model set for the QwenVL-Mod Analyze backend. "
-                       "Enter the GGUF file name in the Director's Analyze settings.")
+    model_name = (model_name or "").strip()
+    if not model_name:
+        # Zero-config: one GGUF in the LLM model paths is unambiguous — use it.
+        from pathlib import Path
+        try:
+            found = set()
+            for root in folder_paths.get_folder_paths("LLM"):
+                for p in Path(root).rglob("*.gguf"):
+                    found.add(p.name)
+        except Exception:
+            found = set()
+        if len(found) == 1:
+            model_name = next(iter(found))
+            log.info("[MiniMaxDirector] qwenvl Analyze: no model set — using the only "
+                     "GGUF found: %s", model_name)
+        elif len(found) > 1:
+            raise VLMError("Several GGUF models found (%s). Enter the one to use in "
+                           "the Director's Analyze settings." % ", ".join(sorted(found)[:5]))
+        else:
+            raise VLMError("No GGUF model found in the LLM model paths — enter the "
+                           "file name in the Director's Analyze settings.")
 
     tensors = []
     for b in images_b64:
