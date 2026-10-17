@@ -611,6 +611,12 @@ def _qwenvl_generate(images_b64, prompt, system_prompt, model_name, max_tokens):
             found = set()
             for root in folder_paths.get_folder_paths("LLM"):
                 for p in Path(root).rglob("*.gguf"):
+                    # same convention as QwenVL-Mod's own model list: mmproj files are
+                    # vision projectors and mtp files are draft sidecars — neither is
+                    # a standalone model
+                    low = p.name.lower()
+                    if "mmproj" in low or low.startswith("mtp"):
+                        continue
                     found.add(p.name)
         except Exception:
             found = set()
