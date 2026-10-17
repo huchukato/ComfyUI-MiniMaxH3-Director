@@ -645,6 +645,11 @@ def _qwenvl_generate(images_b64, prompt, system_prompt, model_name, max_tokens):
         keep_model_loaded=False,
         seed=random.randint(0, 2 ** 31 - 1),
         keep_last_prompt=False,
+        # the Advanced node's remaining required knobs — the same values the
+        # QwenVL_Unified wrapper passes for its GGUF branch
+        device="auto", camera_tag="None", temperature=0.25, top_p=0.9,
+        repetition_penalty=1.0, frame_count=16, ctx=32768, n_batch=512,
+        gpu_layers=-1, image_max_tokens=4096, top_k=20, pool_size=4194304,
         image=tensors[0] if tensors else None,
         image2=tensors[1] if len(tensors) > 1 else None,
         image3=tensors[2] if len(tensors) > 2 else None,
