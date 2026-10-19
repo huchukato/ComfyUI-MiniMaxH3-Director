@@ -1100,7 +1100,7 @@ function parseInitial(jsonStr) {
     normalDurationFrames: 120,
     reference_mode: "OFF",
     prompt_format: "minimax",
-    analyzeProvider: "ollama",
+    analyzeProvider: "qwenvl",
     analyzeBaseUrl: "",
     analyzeModel: "",
     summary: "",
@@ -10201,7 +10201,7 @@ class TimelineEditor {
           previewsRow.appendChild(imgWrapper);
         });
 
-        const _provider = this.timeline.analyzeProvider || "ollama";
+        const _provider = this.timeline.analyzeProvider || "qwenvl";
         if (_provider !== "off") {
           const valBtn = document.createElement("button");
           valBtn.className = "mmxd-character-validate-btn";
@@ -10441,7 +10441,7 @@ class TimelineEditor {
           // so the model is asked about a place or a garment when that is what the slot
           // holds, instead of being asked for hair and clothing regardless
           kind: this.subjectSlots()[idx]?.kind || "person",
-          provider: this.timeline.analyzeProvider || "ollama",
+          provider: this.timeline.analyzeProvider || "qwenvl",
           base_url: this.timeline.analyzeBaseUrl || "",
           model: this.timeline.analyzeModel || "",
           // read at send time, not stored with the timeline (issue #15)
@@ -10735,7 +10735,7 @@ class TimelineEditor {
       normalDurationFrames: this.timeline.normalDurationFrames,
       reference_mode: this.timeline.reference_mode || "OFF",
       prompt_format: this.timeline.prompt_format || "minimax",
-      analyzeProvider: this.timeline.analyzeProvider || "ollama",
+      analyzeProvider: this.timeline.analyzeProvider || "qwenvl",
       analyzeBaseUrl: this.timeline.analyzeBaseUrl || "",
       analyzeModel: this.timeline.analyzeModel || "",
       summary: this.timeline.summary || "",
@@ -12262,7 +12262,7 @@ class TimelineEditor {
         normalDurationFrames: this.timeline.normalDurationFrames,
         reference_mode: this.timeline.reference_mode || "OFF",
         prompt_format: this.timeline.prompt_format || "minimax",
-        analyzeProvider: this.timeline.analyzeProvider || "ollama",
+        analyzeProvider: this.timeline.analyzeProvider || "qwenvl",
         analyzeBaseUrl: this.timeline.analyzeBaseUrl || "",
         analyzeModel: this.timeline.analyzeModel || "",
         summary: this.timeline.summary || "",
@@ -12833,7 +12833,7 @@ class TimelineEditor {
       "qwenvl": { url: "", model: "Qwen3.5-9B-…gguf (file name)" },
     };
 
-    if (!this.timeline.analyzeProvider) this.timeline.analyzeProvider = "ollama";
+    if (!this.timeline.analyzeProvider) this.timeline.analyzeProvider = "qwenvl";
     if (this.timeline.analyzeBaseUrl === undefined) this.timeline.analyzeBaseUrl = "";
     if (this.timeline.analyzeModel === undefined) this.timeline.analyzeModel = "";
 
@@ -12881,7 +12881,7 @@ class TimelineEditor {
     const keyRow = this._makeSettingRow("API key", keyInput);
 
     const refreshProviderRows = () => {
-      const prov = this.timeline.analyzeProvider || "ollama";
+      const prov = this.timeline.analyzeProvider || "qwenvl";
       const defs = PROVIDER_DEFAULTS[prov] || PROVIDER_DEFAULTS.ollama;
       urlInput.placeholder = defs.url || "http://your-server:port";
       modelInput.placeholder = defs.model || "your-loaded-model-name";
@@ -13469,7 +13469,7 @@ app.registerExtension({
             const tdWidget = director.widgets?.find(w => w.name === "timeline_data");
             if (tdWidget && tdWidget.value) {
               const td = JSON.parse(tdWidget.value);
-              provider = td.analyzeProvider || "ollama";
+              provider = td.analyzeProvider || "qwenvl";
               baseUrl = td.analyzeBaseUrl || "";
               model = td.analyzeModel || "";
             }

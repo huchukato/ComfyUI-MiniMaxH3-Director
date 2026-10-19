@@ -1,3 +1,11 @@
+## 0.3.5
+
+**QwenVL-Mod (built-in) is now the default Analyze backend** — new timelines start on it
+instead of Ollama; the HTTP providers remain one dropdown click away. Zero-config now works
+on Vast.ai / bare ComfyUI too: QwenVL-Mod 2.12.1 registers the models/LLM folder key when
+no extra_model_paths.yaml declares one, so the discovery finds the enhancer GGUF out of the
+box (requires the updated QwenVL-Mod on the instance).
+
 # Changelog
 
 ## 0.3.4
