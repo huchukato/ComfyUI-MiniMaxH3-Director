@@ -1,3 +1,12 @@
+## 0.3.6
+
+**Per-segment autoprompting: the Enhance button** — the Segment Prompt panel gains an
+Enhance button next to the label. Write a simplified idea for the segment, click Enhance,
+and the built-in QwenVL (same backend as Analyze, the charsheet in @ref1 as reference)
+expands it into a rich single-shot description written back into the segment. The scene's
+global prompt goes along as style context. The enhancer returns flowing prose on purpose —
+the planner owns the R2VA envelope, so a structured answer here would be wrapped twice.
+
 ## 0.3.5
 
 **QwenVL-Mod (built-in) is now the default Analyze backend** — new timelines start on it

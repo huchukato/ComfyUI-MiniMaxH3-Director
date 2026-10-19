@@ -3510,7 +3510,24 @@ class TimelineEditor {
 
     this.segmentPromptLabel = document.createElement("div");
     this.segmentPromptLabel.className = "mmxd-prompt-label";
-    this.segmentPromptLabel.textContent = "Segment Prompt";
+    this.segmentPromptLabel.style.display = "flex";
+    this.segmentPromptLabel.style.alignItems = "center";
+    this.segmentPromptLabel.style.justifyContent = "space-between";
+    const segLabelSpan = document.createElement("span");
+    segLabelSpan.textContent = "Segment Prompt";
+    this.segmentPromptLabel.appendChild(segLabelSpan);
+    this.enhanceBtn = document.createElement("button");
+    this.enhanceBtn.className = "mmxd-character-validate-btn";
+    this.enhanceBtn.textContent = "Enhance";
+    this.enhanceBtn.title = "Expand the simplified idea into a full shot description with the built-in QwenVL (same backend as Analyze)";
+    this.enhanceBtn.style.position = "static";
+    this.enhanceBtn.style.transform = "none";
+    this.enhanceBtn.style.left = "auto";
+    this.enhanceBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      this.runSegmentEnhance(this.enhanceBtn);
+    });
+    this.segmentPromptLabel.appendChild(this.enhanceBtn);
     this.promptWrapper.appendChild(this.segmentPromptLabel);
 
     this.promptInput = document.createElement("textarea");
@@ -10468,6 +10485,61 @@ class TimelineEditor {
       alert("Request failed. Is your server running?");
       btn.classList.remove("loading");
       btn.textContent = "Analyze";
+    }
+  }
+
+  async runSegmentEnhance(btn) {
+    if (btn.classList.contains("loading")) return;
+    if (this.selectionType !== "image" || !this.timeline.segments[this.selectedIndex]) {
+      alert("Select a segment on the timeline first.");
+      return;
+    }
+    const idea = (this.promptInput.value || "").trim();
+    if (!idea) {
+      alert("Write the simplified idea for the segment first — Enhance expands it, it does not invent it.");
+      return;
+    }
+
+    btn.classList.add("loading");
+    btn.textContent = "Enhancing...";
+
+    const b64_images = (await Promise.all(
+      (this.subjectSlots()[0].images || []).map(img => this._refImageToB64(img))
+    )).filter(Boolean);
+
+    try {
+      const resp = await api.fetchApi("/minimax_director/enhance_segment", {
+        method: "POST",
+        body: JSON.stringify({
+          image_b64: b64_images,
+          segment_text: idea,
+          global_prompt: this.timeline.global_prompt || "",
+          provider: this.timeline.analyzeProvider || "qwenvl",
+          base_url: this.timeline.analyzeBaseUrl || "",
+          model: this.timeline.analyzeModel || "",
+          api_key: getAnalyzeApiKey(),
+        })
+      });
+      const result = await resp.json();
+      if (result.status === "success") {
+        this.promptInput.value = result.text;
+        this.timeline.segments[this.selectedIndex].prompt = result.text;
+        btn.textContent = "Success!";
+        setTimeout(() => {
+          btn.textContent = "Enhance";
+          btn.classList.remove("loading");
+          this.commitChanges();
+        }, 1500);
+      } else {
+        alert("Enhance Error: " + result.message);
+        btn.classList.remove("loading");
+        btn.textContent = "Enhance";
+      }
+    } catch (err) {
+      console.error("[MiniMaxDirector] enhance request failed", err);
+      alert("Request failed. Is your server running?");
+      btn.classList.remove("loading");
+      btn.textContent = "Enhance";
     }
   }
 

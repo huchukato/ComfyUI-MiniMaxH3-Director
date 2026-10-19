@@ -489,6 +489,28 @@ def analyze_prompt(kind):
     )
 
 
+def enhance_prompt(idea, global_prompt_text):
+    """Expand the user's simplified segment idea into one shot's rich description.
+
+    The Director's planner owns the R2VA envelope (subject definitions, retention,
+    shot headers) — the segment text only fills the shot's description, so the
+    enhancer must return flowing prose: a structured answer here would be wrapped
+    twice in the compiled prompt, exactly the pollution the Analyze paste showed.
+    """
+    ctx = ""
+    if global_prompt_text and global_prompt_text.strip():
+        ctx = ("\n\nScene context to stay consistent with (style and atmosphere — "
+               "do not repeat it):\n%s" % global_prompt_text.strip())
+    return (
+        "Expand this simplified idea into a rich, detailed description for ONE video "
+        "shot: camera movement, the subject's actions and expressions, lighting, "
+        "atmosphere, key visual details. The subject is the person in the reference "
+        "images — keep their look exactly as shown. Write 2-4 sentences of flowing "
+        "English prose only: no headings, no labels, no structured sections, no "
+        "timestamps.\n\nSimplified idea:\n%s%s" % (idea.strip(), ctx)
+    )
+
+
 def normalize_base_url(url, fallback=""):
     """Make a typed-in address usable.
 
@@ -796,6 +818,47 @@ async def analyze_character_endpoint(request):
                                   "retention_note": retained})
     except Exception as e:
         log.error("[MiniMaxDirector] Failed to analyze character: %s", e)
+        return web.json_response({"status": "error", "message": str(e)}, status=500)
+
+
+@PromptServer.instance.routes.post("/minimax_director/enhance_segment")
+async def enhance_segment_endpoint(request):
+    """The segment panel's Enhance button: simplified idea in, rich shot prose out.
+
+    Same backend resolution as Analyze — the qwenvl built-in by default — and the
+    same reference images (the charsheet in @ref1) so the expansion stays on-model.
+    """
+    try:
+        data = await request.json()
+        image_b64 = data.get("image_b64", "")
+        idea = (data.get("segment_text") or "").strip()
+        provider, base_url, model_name = _resolve_provider(data)
+        api_key = resolve_api_key(data)
+
+        if provider == "off":
+            return web.json_response({"status": "error", "message": "Analyze is set to Off / Manual — the Enhance button uses the same backend."})
+        if not idea:
+            return web.json_response({"status": "error", "message": "Write the simplified idea for the segment first — Enhance expands it, it does not invent it."})
+        if not image_b64:
+            return web.json_response({"status": "error", "message": "No reference image provided — load the character sheet in @ref1."})
+
+        b64_list = image_b64 if isinstance(image_b64, list) else [image_b64]
+        cleaned = [b.split(",", 1)[1] if "," in b else b for b in b64_list]
+        if not cleaned:
+            return web.json_response({"status": "error", "message": "No valid base64 images decoded."})
+
+        log.info("[MiniMaxDirector] Enhancing segment via %s (%s, model '%s')...",
+                 provider, base_url, model_name)
+        try:
+            enhanced = await vlm_generate(
+                cleaned, enhance_prompt(idea, data.get("global_prompt") or ""),
+                provider, base_url, model_name, api_key=api_key)
+        except VLMError as e:
+            return web.json_response({"status": "error", "message": str(e)})
+
+        return web.json_response({"status": "success", "text": enhanced})
+    except Exception as e:
+        log.error("[MiniMaxDirector] Failed to enhance segment: %s", e)
         return web.json_response({"status": "error", "message": str(e)}, status=500)
 
 
