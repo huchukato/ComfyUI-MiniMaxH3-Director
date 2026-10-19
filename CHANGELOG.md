@@ -1,3 +1,10 @@
+## 0.3.7
+
+**Enhance button actually visible** — 0.3.6 reused the Analyze button's class, which is
+absolutely positioned for the character slots, and sat inside the prompt label whose
+`pointer-events: none` made it unclickable anyway. The Enhance button now has its own
+static, clickable class.
+
 ## 0.3.6
 
 **Per-segment autoprompting: the Enhance button** — the Segment Prompt panel gains an

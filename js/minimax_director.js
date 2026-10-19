@@ -241,6 +241,9 @@ const STYLES = `
     user-select: none;
     z-index: 5;
   }
+  .mmxd-enhance-btn { pointer-events: auto; position: static; background: rgba(0,0,0,0.85); color: #e0e0e0; border: 1px solid #444; border-radius: 3px; padding: 2px 8px; font-size: 9px; font-weight: bold; cursor: pointer; transition: all 0.15s; z-index: 20; text-transform: uppercase; letter-spacing: 0.5px; }
+  .mmxd-enhance-btn:hover { background: #4fff8f; color: #000; border-color: #4fff8f; }
+  .mmxd-enhance-btn.loading { background: #333; color: #888; cursor: wait; pointer-events: none; }
   .mmxd-prompt-area {
     position: absolute;
     top: 20px;
@@ -3517,12 +3520,9 @@ class TimelineEditor {
     segLabelSpan.textContent = "Segment Prompt";
     this.segmentPromptLabel.appendChild(segLabelSpan);
     this.enhanceBtn = document.createElement("button");
-    this.enhanceBtn.className = "mmxd-character-validate-btn";
+    this.enhanceBtn.className = "mmxd-enhance-btn";
     this.enhanceBtn.textContent = "Enhance";
     this.enhanceBtn.title = "Expand the simplified idea into a full shot description with the built-in QwenVL (same backend as Analyze)";
-    this.enhanceBtn.style.position = "static";
-    this.enhanceBtn.style.transform = "none";
-    this.enhanceBtn.style.left = "auto";
     this.enhanceBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       this.runSegmentEnhance(this.enhanceBtn);
