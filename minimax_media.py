@@ -496,6 +496,8 @@ def enhance_prompt(idea, global_prompt_text):
     shot headers) — the segment text only fills the shot's description, so the
     enhancer must return flowing prose: a structured answer here would be wrapped
     twice in the compiled prompt, exactly the pollution the Analyze paste showed.
+    Style control rides the TagForge wildcards ForgeHub expands before the job —
+    __mmh3/style__ tokens land in the global prompt/ideas already resolved.
     """
     ctx = ""
     if global_prompt_text and global_prompt_text.strip():
