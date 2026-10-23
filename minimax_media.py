@@ -31,6 +31,14 @@ import folder_paths
 from aiohttp import web
 from server import PromptServer
 
+try:
+    # TagForge's wildcard vocabulary (QwenVL-Mod ships the same helper) — lets the
+    # enhance route expand __dir/key__ tokens in ideas and the global prompt even
+    # when the text never passes through a WildcardProcessor node (canvas flow).
+    from wildcard_util import expand_wildcard_tokens
+except Exception:
+    expand_wildcard_tokens = None
+
 log = logging.getLogger(__name__)
 
 WORKSPACE_SUBDIR = "whatdreamscost"
@@ -834,6 +842,10 @@ async def enhance_segment_endpoint(request):
         data = await request.json()
         image_b64 = data.get("image_b64", "")
         idea = (data.get("segment_text") or "").strip()
+        global_prompt = data.get("global_prompt") or ""
+        if expand_wildcard_tokens is not None:
+            idea = expand_wildcard_tokens(idea)
+            global_prompt = expand_wildcard_tokens(global_prompt)
         provider, base_url, model_name = _resolve_provider(data)
         api_key = resolve_api_key(data)
 
@@ -853,7 +865,7 @@ async def enhance_segment_endpoint(request):
                  provider, base_url, model_name)
         try:
             enhanced = await vlm_generate(
-                cleaned, enhance_prompt(idea, data.get("global_prompt") or ""),
+                cleaned, enhance_prompt(idea, global_prompt),
                 provider, base_url, model_name, api_key=api_key)
         except VLMError as e:
             return web.json_response({"status": "error", "message": str(e)})
