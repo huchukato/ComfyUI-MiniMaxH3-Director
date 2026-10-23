@@ -3518,6 +3518,7 @@ class TimelineEditor {
     this.segmentPromptLabel.style.justifyContent = "space-between";
     const segLabelSpan = document.createElement("span");
     segLabelSpan.textContent = "Segment Prompt";
+    this.segmentLabelText = segLabelSpan;
     this.segmentPromptLabel.appendChild(segLabelSpan);
     this.enhanceBtn = document.createElement("button");
     this.enhanceBtn.className = "mmxd-enhance-btn";
@@ -6276,7 +6277,7 @@ class TimelineEditor {
 
       if (this.segmentPromptLabel) {
         this.segmentPromptLabel.style.display = "block";
-        this.segmentPromptLabel.textContent = "Segment Prompt";
+        this.setSegmentPromptLabel("Segment Prompt", false);
       }
 
       if (this.strengthRow) this.strengthRow.style.display = "flex";
@@ -6449,7 +6450,7 @@ class TimelineEditor {
       this.promptInput.value = this.getGlobalPrompt();
       if (this.segmentPromptLabel) {
         this.segmentPromptLabel.style.display = "block";
-        this.segmentPromptLabel.textContent = "Global Prompt (Reference Video)";
+        this.setSegmentPromptLabel("Global Prompt (Reference Video)", false);
       }
 
       this.strengthRow.style.display = "flex";
@@ -6467,7 +6468,7 @@ class TimelineEditor {
     } else {
       if (this.segmentPromptLabel) {
         this.segmentPromptLabel.style.display = "block";
-        this.segmentPromptLabel.textContent = "Segment Prompt";
+        this.setSegmentPromptLabel("Segment Prompt", true);
       }
       if (this.globalPromptInput) {
         this.globalPromptInput.disabled = false;
@@ -6618,7 +6619,7 @@ class TimelineEditor {
 
     // 4. Update the prompt labels
     if (this.segmentPromptLabel) {
-      this.segmentPromptLabel.textContent = isRetake ? "Retake Prompt" : "Local Prompt";
+      this.setSegmentPromptLabel(isRetake ? "Retake Prompt" : "Local Prompt", !isRetake);
     }
 
     // 5. Update UI selection inputs
@@ -10487,6 +10488,13 @@ class TimelineEditor {
       btn.classList.remove("loading");
       btn.textContent = "Analyze";
     }
+  }
+
+  // Update the panel's label text WITHOUT stomping the Enhance button that lives
+  // in the same row — assigning textContent on the label itself deletes it.
+  setSegmentPromptLabel(text, showEnhance) {
+    if (this.segmentLabelText) this.segmentLabelText.textContent = text;
+    if (this.enhanceBtn) this.enhanceBtn.style.display = showEnhance ? "" : "none";
   }
 
   async runSegmentEnhance(btn) {
