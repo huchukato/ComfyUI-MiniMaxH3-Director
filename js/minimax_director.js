@@ -3553,6 +3553,7 @@ class TimelineEditor {
       }
       if (this.selectionType === "image" && this.timeline.segments[this.selectedIndex]) {
         this.timeline.segments[this.selectedIndex].prompt = this.promptInput.value;
+        this.timeline.segments[this.selectedIndex].autoEnhanced = false;
         this.commitChanges();
       } else if (this.selectionType === "motion") {
         const val = this.promptInput.value;
@@ -10524,6 +10525,7 @@ class TimelineEditor {
       if (result.status === "success") {
         this.promptInput.value = result.text;
         this.timeline.segments[this.selectedIndex].prompt = result.text;
+        this.timeline.segments[this.selectedIndex].autoEnhanced = true;
         btn.textContent = "Success!";
         setTimeout(() => {
           btn.textContent = "Enhance";
@@ -13529,12 +13531,52 @@ app.registerExtension({
     // provider isn't "off". Fully tolerant: failures are swallowed so they never block a run.
     if (app._mmxDirectorUnloadHookInstalled) return;
     app._mmxDirectorUnloadHookInstalled = true;
+    // Auto-enhance at queue time — the same thing the serverless handler does per
+    // job (enhance default on): every segment whose prompt is still the simplified
+    // idea is expanded by the built-in QwenVL before the workflow queues. Manual
+    // edits reset the per-segment flag; the Enhance button stays for one-off re-runs.
+    async function autoEnhanceDirectorSegments(director) {
+      const tdWidget = director.widgets?.find(w => w.name === "timeline_data");
+      if (!tdWidget?.value) return;
+      let td;
+      try { td = JSON.parse(tdWidget.value); } catch (e) { return; }
+      if ((td.analyzeProvider || "qwenvl") === "off") return;
+      const images = ((td.subjects || [])[0]?.images || [])
+        .map(img => img && img.b64).filter(Boolean);
+      let touched = false;
+      for (const seg of td.segments || []) {
+        const idea = (seg.prompt || "").trim();
+        if (!idea || seg.autoEnhanced) continue;
+        try {
+          const resp = await api.fetchApi("/minimax_director/enhance_segment", {
+            method: "POST",
+            body: JSON.stringify({
+              image_b64: images,
+              segment_text: idea,
+              global_prompt: td.global_prompt || "",
+              provider: td.analyzeProvider || "qwenvl",
+              base_url: td.analyzeBaseUrl || "",
+              model: td.analyzeModel || "",
+              api_key: getAnalyzeApiKey(),
+            }),
+          });
+          const result = await resp.json();
+          if (result.status === "success" && (result.text || "").trim()) {
+            seg.prompt = result.text.trim();
+            seg.autoEnhanced = true;
+            touched = true;
+          }
+        } catch (e) {}
+      }
+      if (touched) tdWidget.value = JSON.stringify(td);
+    }
     const origQueuePrompt = app.queuePrompt;
     app.queuePrompt = async function (...args) {
       try {
         const nodes = app.graph?._nodes || [];
         const director = nodes.find(n => n && (n.comfyClass === "MiniMaxH3DirectorCS" || n.type === "MiniMaxH3DirectorCS"));
         if (director) {
+          try { await autoEnhanceDirectorSegments(director); } catch (e) {}
           // Read provider settings from the node's saved timeline_data widget.
           let provider = "ollama", baseUrl = "", model = "";
           try {
