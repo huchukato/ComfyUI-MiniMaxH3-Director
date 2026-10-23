@@ -1,3 +1,11 @@
+## 0.3.8
+
+**Auto-enhance at queue time (serverless parity)** — queueing a Director workflow now expands every
+segment whose prompt is still the simplified idea through the built-in QwenVL, the same thing the
+Runpod handler does per job. Editing a segment's text by hand resets its flag so the next queue
+re-enhances it; the Enhance button stays for one-off manual re-runs. Provider "off" skips it and
+failures never block the queue.
+
 ## 0.3.7
 
 **Enhance button actually visible** — 0.3.6 reused the Analyze button's class, which is
