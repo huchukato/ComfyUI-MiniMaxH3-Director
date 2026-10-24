@@ -184,6 +184,20 @@ videos, drag-and-drop straight onto the node, and the `@ref1` … `@ref9` subjec
 slots including the optional local VLM "Analyze" button (Ollama / LM Studio /
 any OpenAI-compatible endpoint) with automatic VRAM release before a run.
 
+### The per-segment Enhance button and auto-enhance
+
+Select a segment and the prompt panel offers an **Enhance** button: your simplified idea
+goes to the built-in QwenVL (the same backend as Analyze, the charsheet in `@ref1` as its
+reference) and comes back as rich single-shot prose — the global prompt rides along as
+style context. TagForge wildcards (`__mmh3/style/cinematic__`, camera moves, …) written in
+the idea or the global prompt are expanded before the model sees them.
+
+Queueing runs the same expansion **automatically** for every segment still holding its
+simplified idea — the same thing the Runpod handler does per job. Editing a segment's
+text by hand resets its flag, so the next queue re-enhances it; the button stays for
+one-off manual re-runs. With the Analyze provider set to *Off / Manual* none of this
+runs, and a failed expansion never blocks the queue — the segment keeps your idea.
+
 ## Requirements
 
 * **ComfyUI ≥ 0.30.0** — H3 support, `comfy_api.latest` and the packed AV latent all
@@ -541,20 +555,6 @@ that survives every cut.
 
 Images left in a slot on the fl2va path are kept, so switching the toolbar back costs you
 nothing, but they are dimmed and the prompt panel says they are not being sent.
-
-### The per-segment Enhance button and auto-enhance
-
-Select a segment and the prompt panel offers an **Enhance** button: your simplified idea
-goes to the built-in QwenVL (the same backend as Analyze, the charsheet in `@ref1` as its
-reference) and comes back as rich single-shot prose — the global prompt rides along as
-style context. TagForge wildcards (`__mmh3/style/cinematic__`, camera moves, …) written in
-the idea or the global prompt are expanded before the model sees them.
-
-Queueing runs the same expansion **automatically** for every segment still holding its
-simplified idea — the same thing the Runpod handler does per job. Editing a segment's
-text by hand resets its flag, so the next queue re-enhances it; the button stays for
-one-off manual re-runs. With the Analyze provider set to *Off / Manual* none of this
-runs, and a failed expansion never blocks the queue — the segment keeps your idea.
 
 ### How closely a reference is followed
 
