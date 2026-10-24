@@ -48,6 +48,24 @@ see the exact prompt the model will receive while you are still editing it.
 
 ## News
 
+**0.3.9** · 2026-10-24 — registry listing live as **MiniMax H3 Director Enhanced** (icon,
+banner, changelog shipped with each registry version).
+
+**0.3.8** · 2026-10-24 — **auto-enhance at queue time** (serverless parity): segments still
+holding their simplified idea are expanded by the built-in QwenVL when you queue. TagForge
+wildcards are expanded in the enhance route, and the Analyze settings gain a **model
+dropdown** listing the GGUF models found on disk when several are present.
+
+**0.3.7** · 2026-10-24 — the **Enhance button is actually visible**: 0.3.6 reused the
+Analyze button's absolutely-positioned class inside a `pointer-events: none` label, and the
+selection updates then deleted the button outright by rewriting the label's `textContent`.
+
+**0.3.6** · 2026-10-24 — an **Enhance button on the segment panel**: the simplified idea
+becomes rich single-shot prose through the built-in QwenVL, same backend as Analyze.
+
+**0.3.5** · 2026-10-24 — **QwenVL-Mod (built-in) is the default Analyze backend**: zero-config
+GGUF discovery through QwenVL-Mod's LLM folder registration; Ollama demoted to an option.
+
 **0.3.2** · 2026-10-02 — a **voice clip on each subject** (issue #10): a button on the
 subject slot, no timeline lane, no render time. Two characters, two voices, one background track.
 
@@ -523,6 +541,20 @@ that survives every cut.
 
 Images left in a slot on the fl2va path are kept, so switching the toolbar back costs you
 nothing, but they are dimmed and the prompt panel says they are not being sent.
+
+### The per-segment Enhance button and auto-enhance
+
+Select a segment and the prompt panel offers an **Enhance** button: your simplified idea
+goes to the built-in QwenVL (the same backend as Analyze, the charsheet in `@ref1` as its
+reference) and comes back as rich single-shot prose — the global prompt rides along as
+style context. TagForge wildcards (`__mmh3/style/cinematic__`, camera moves, …) written in
+the idea or the global prompt are expanded before the model sees them.
+
+Queueing runs the same expansion **automatically** for every segment still holding its
+simplified idea — the same thing the Runpod handler does per job. Editing a segment's
+text by hand resets its flag, so the next queue re-enhances it; the button stays for
+one-off manual re-runs. With the Analyze provider set to *Off / Manual* none of this
+runs, and a failed expansion never blocks the queue — the segment keeps your idea.
 
 ### How closely a reference is followed
 
