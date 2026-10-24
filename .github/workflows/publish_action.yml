@@ -34,12 +34,27 @@ jobs:
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "Version is $version"
 
+      - name: Extract changelog
+        run: |
+          VERSION=$(sed -n 's/^version[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' pyproject.toml | head -1)
+          if [ -z "$VERSION" ]; then
+            echo "no version in pyproject.toml" >&2
+            exit 1
+          fi
+          awk -v ver="## $VERSION" '
+            $0 ~ "^"ver"($| )" {found=1; next}
+            found && /^## / {exit}
+            found {print}
+          ' CHANGELOG.md > changelog.txt
+          [ -s changelog.txt ] || git log -1 --pretty=%B > changelog.txt
+
       - name: Publish Custom Node
-        uses: Comfy-Org/publish-node-action@main
-        with:
-          # Create the key at https://registry.comfy.org (Publisher -> API Keys) and
-          # store it as the repository secret REGISTRY_ACCESS_TOKEN.
-          personal_access_token: ${{ secrets.REGISTRY_ACCESS_TOKEN }}
+        env:
+          REGISTRY_TOKEN: ${{ secrets.REGISTRY_ACCESS_TOKEN }}
+        run: |
+          pip install comfy-cli
+          comfy --skip-prompt --no-enable-telemetry env
+          comfy node publish --token "$REGISTRY_TOKEN" --changelog-file changelog.txt
 
       # Only after the registry accepted it, so a failed publish leaves no tag claiming
       # a version that was never released. Existing tags are left alone rather than moved:

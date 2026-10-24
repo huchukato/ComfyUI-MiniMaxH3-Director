@@ -1,3 +1,8 @@
+## 0.3.9
+
+**Registry release metadata** — the changelog now ships with the registry version page (publish
+action extracts the CHANGELOG section per version). No functional changes in this release.
+
 ## 0.3.8
 
 **Auto-enhance at queue time (serverless parity)** — queueing a Director workflow now expands every
