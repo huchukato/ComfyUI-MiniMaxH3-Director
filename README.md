@@ -1,4 +1,4 @@
-# ComfyUI MiniMax H3 Director Enhanced
+# 🎬 ComfyUI MiniMax H3 Director Enhanced
 
 **A timeline editor for [MiniMax H3](https://huggingface.co/Comfy-Org/MiniMax-H3) inside ComfyUI.**
 Drag images, videos and music onto tracks, trim them on a ruler, write a prompt per shot,
@@ -7,7 +7,9 @@ see the exact prompt the model will receive while you are still editing it.
 
 [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE)
 [![ComfyUI](https://img.shields.io/badge/ComfyUI-%E2%89%A5%200.30.0-1a1a1a)](https://github.com/comfyanonymous/ComfyUI)
-[![version](https://img.shields.io/badge/version-0.3.8-brightgreen)](CHANGELOG.md)
+[![version](https://img.shields.io/badge/version-0.3.9-brightgreen)](CHANGELOG.md)
+[![Registry](https://img.shields.io/badge/ComfyUI_Registry-install_from_Manager-8A2BE2)](https://registry.comfy.org/publishers/huchukato/nodes/minimaxh3-director-enhanced)
+[![stars](https://img.shields.io/github/stars/huchukato/ComfyUI-MiniMaxH3-Director-Enhanced?style=social)](https://github.com/huchukato/ComfyUI-MiniMaxH3-Director-Enhanced/stargazers)
 
 ![MiniMax H3 Director Enhanced](banner.png)
 
@@ -21,11 +23,11 @@ see the exact prompt the model will receive while you are still editing it.
 
 ## What's enhanced over the original
 
-- **Auto-enhance at queue time** — segments still holding their simplified idea are expanded into rich shot prose by the built-in QwenVL when you queue. No clicks; editing a segment re-enhances it on the next queue
-- **Per-segment Enhance button** — one idea in, one dense single-shot description out (same backend as Analyze, the charsheet as reference)
-- **TagForge wildcards in the enhance route** — `__mmh3/style/cinematic__`, camera moves and friends expand before the model sees them, on canvas too
-- **QwenVL-Mod built-in as the default Analyze backend** — zero-config GGUF discovery, no Ollama/LM Studio needed; a model dropdown appears when several GGUFs are on disk
-- **ComfyUI Manager install** — published on the registry as `huchukato/minimaxh3-director-enhanced`
+⚡ **Auto-enhance at queue time** — segments still holding their simplified idea are expanded into rich shot prose by the built-in QwenVL when you queue. No clicks; editing a segment re-enhances it on the next queue
+✨ **Per-segment Enhance button** — one idea in, one dense single-shot description out (same backend as Analyze, the charsheet as reference)
+🎲 **TagForge wildcards in the enhance route** — `__mmh3/style/cinematic__`, camera moves and friends expand before the model sees them, on canvas too
+🧠 **QwenVL-Mod built-in as the default Analyze backend** — zero-config GGUF discovery, no Ollama/LM Studio needed; a model dropdown appears when several GGUFs are on disk
+📦 **ComfyUI Manager install** — published on the registry as `huchukato/minimaxh3-director-enhanced`
 
 ---
 
