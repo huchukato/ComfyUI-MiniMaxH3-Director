@@ -506,6 +506,9 @@ def enhance_prompt(idea, global_prompt_text):
     twice in the compiled prompt, exactly the pollution the Analyze paste showed.
     Style control rides the TagForge wildcards ForgeHub expands before the job —
     __mmh3/style__ tokens land in the global prompt/ideas already resolved.
+    The style vocabulary and the visible-or-audible rule come from the pack's own
+    Enhance Prompt node preset (minimax_enhance.SYSTEM_GLOBAL) — the same bar the
+    standalone node is held to.
     """
     ctx = ""
     if global_prompt_text and global_prompt_text.strip():
@@ -513,11 +516,17 @@ def enhance_prompt(idea, global_prompt_text):
                "do not repeat it):\n%s" % global_prompt_text.strip())
     return (
         "Expand this simplified idea into a rich, detailed description for ONE video "
-        "shot: camera movement, the subject's actions and expressions, lighting, "
-        "atmosphere, key visual details. The subject is the person in the reference "
-        "images — keep their look exactly as shown. Write 2-4 sentences of flowing "
-        "English prose only: no headings, no labels, no structured sections, no "
-        "timestamps.\n\nSimplified idea:\n%s%s" % (idea.strip(), ctx)
+        "shot. Open by naming the visual style, chosen from: Cinematic, live-action, "
+        "2D-animated, 3D CG, claymation, watercolor, vintage film — derived from the "
+        "reference images when they show one. Then the subject's actions and "
+        "expressions, the lighting (direction, hardness, colour temperature), the "
+        "atmosphere and key visible details, and finally the camera behaviour written "
+        "as a natural action inside the sentence. The subject is the person in the "
+        "reference images — keep their look exactly as shown. Every detail must "
+        "correspond to something visible or audible: no intentions, feelings, "
+        "symbolism or backstory. Write 2-4 sentences of flowing English prose only: "
+        "no headings, no labels, no structured sections, no timestamps.\n\n"
+        "Simplified idea:\n%s%s" % (idea.strip(), ctx)
     )
 
 
@@ -876,6 +885,14 @@ async def enhance_segment_endpoint(request):
                 provider, base_url, model_name, api_key=api_key)
         except VLMError as e:
             return web.json_response({"status": "error", "message": str(e)})
+
+        # same post-processing the Enhance Prompt node applies: strip the section
+        # labels the model was told not to write and wrote anyway
+        try:
+            from .minimax_enhance import PRESET_GLOBAL, clean_prompt
+            enhanced = clean_prompt(enhanced, PRESET_GLOBAL)
+        except Exception:
+            pass
 
         return web.json_response({"status": "success", "text": enhanced})
     except Exception as e:
