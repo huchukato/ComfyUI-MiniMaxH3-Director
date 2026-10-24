@@ -13,12 +13,12 @@ classifiers = [
 ]
 
 [project.urls]
-Repository = "https://github.com/seesee75-commits/ComfyUI-MiniMaxH3-Director"
-"Bug Tracker" = "https://github.com/seesee75-commits/ComfyUI-MiniMaxH3-Director/issues"
+Repository = "https://github.com/huchukato/ComfyUI-MiniMaxH3-Director"
+"Bug Tracker" = "https://github.com/huchukato/ComfyUI-MiniMaxH3-Director/issues"
 
 [tool.comfy]
 # Must match the publisher you create at https://registry.comfy.org
-PublisherId = "seesee75-commits"
+PublisherId = "huchukato"
 DisplayName = "MiniMax H3 Director"
 Icon = ""
 # comfy_api.latest, the packed AV latent and H3 support all landed in ComfyUI 0.30.0.

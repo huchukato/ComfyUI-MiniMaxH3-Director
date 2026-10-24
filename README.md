@@ -186,7 +186,7 @@ any OpenAI-compatible endpoint) with automatic VRAM release before a run.
 Not listed yet? Use **Manager → Install via Git URL** and paste:
 
 ```
-https://github.com/seesee75-commits/ComfyUI-MiniMaxH3-Director
+https://github.com/huchukato/ComfyUI-MiniMaxH3-Director
 ```
 
 ### Manual
@@ -195,7 +195,7 @@ Clone into your `custom_nodes` folder and restart:
 
 ```bash
 cd ComfyUI/custom_nodes
-git clone https://github.com/seesee75-commits/ComfyUI-MiniMaxH3-Director
+git clone https://github.com/huchukato/ComfyUI-MiniMaxH3-Director
 ```
 
 On the Windows portable build the folder is
@@ -1068,7 +1068,7 @@ frames → 5.17 s. This is the model's grid, not a bug.
 
 ## Reporting a bug
 
-Open an [issue](https://github.com/seesee75-commits/ComfyUI-MiniMaxH3-Director/issues). The three
+Open an [issue](https://github.com/huchukato/ComfyUI-MiniMaxH3-Director/issues). The three
 things that make a report fixable:
 
 1. the **full traceback** from the ComfyUI console (not just the last line),
@@ -1095,7 +1095,7 @@ that this one branched from is by **[CGlide](https://github.com/CGlide)**.
 
 This project is that editor with a MiniMax H3 backend: new conditioning, storyboard prompt
 compilation, packed AV latents, preview and Retake — by
-[seesee75](https://github.com/seesee75-commits).
+[seesee75](https://github.com/huchukato).
 
 MiniMax H3 by [MiniMax](https://huggingface.co/MiniMaxAI), ComfyUI packaging by
 [Comfy-Org](https://huggingface.co/Comfy-Org).
