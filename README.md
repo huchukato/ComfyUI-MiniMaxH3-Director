@@ -9,6 +9,8 @@ see the exact prompt the model will receive while you are still editing it.
 [![ComfyUI](https://img.shields.io/badge/ComfyUI-%E2%89%A5%200.30.0-1a1a1a)](https://github.com/comfyanonymous/ComfyUI)
 [![version](https://img.shields.io/badge/version-0.3.8-brightgreen)](CHANGELOG.md)
 
+![MiniMax H3 Director Enhanced](banner.png)
+
 ![The MiniMax H3 Director node](docs/images/director-node.png)
 
 <!-- TODO: demo video -->
