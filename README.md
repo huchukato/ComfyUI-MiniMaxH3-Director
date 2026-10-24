@@ -1,4 +1,4 @@
-# ComfyUI MiniMax H3 Director
+# ComfyUI MiniMax H3 Director Enhanced
 
 **A timeline editor for [MiniMax H3](https://huggingface.co/Comfy-Org/MiniMax-H3) inside ComfyUI.**
 Drag images, videos and music onto tracks, trim them on a ruler, write a prompt per shot,
@@ -7,7 +7,7 @@ see the exact prompt the model will receive while you are still editing it.
 
 [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE)
 [![ComfyUI](https://img.shields.io/badge/ComfyUI-%E2%89%A5%200.30.0-1a1a1a)](https://github.com/comfyanonymous/ComfyUI)
-[![version](https://img.shields.io/badge/version-0.3.2-brightgreen)](CHANGELOG.md)
+[![version](https://img.shields.io/badge/version-0.3.8-brightgreen)](CHANGELOG.md)
 
 ![The MiniMax H3 Director node](docs/images/director-node.png)
 
