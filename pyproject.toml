@@ -1,5 +1,5 @@
 [project]
-name = "minimaxh3-director"
+name = "minimaxh3-director-enhanced"
 description = "A timeline editor for MiniMax H3 — storyboard prompts, first/last keyframes, image/video/audio references, native joint audio, live sampling preview, retakes and shot chaining."
 version = "0.3.8"
 license = { file = "LICENSE" }
@@ -19,7 +19,7 @@ Repository = "https://github.com/huchukato/ComfyUI-MiniMaxH3-Director"
 [tool.comfy]
 # Must match the publisher you create at https://registry.comfy.org
 PublisherId = "huchukato"
-DisplayName = "MiniMax H3 Director"
+DisplayName = "MiniMax H3 Director Enhanced"
 Icon = ""
 # comfy_api.latest, the packed AV latent and H3 support all landed in ComfyUI 0.30.0.
 requires-comfyui = ">=0.30.0"
