@@ -20,6 +20,7 @@ Repository = "https://github.com/huchukato/ComfyUI-MiniMaxH3-Director-Enhanced"
 # Must match the publisher you create at https://registry.comfy.org
 PublisherId = "huchukato"
 DisplayName = "MiniMax H3 Director Enhanced"
-Icon = ""
+Icon = "https://raw.githubusercontent.com/huchukato/ComfyUI-MiniMaxH3-Director-Enhanced/main/icon.png"
+Banner = "https://raw.githubusercontent.com/huchukato/ComfyUI-MiniMaxH3-Director-Enhanced/main/banner.png"
 # comfy_api.latest, the packed AV latent and H3 support all landed in ComfyUI 0.30.0.
 requires-comfyui = ">=0.30.0"
