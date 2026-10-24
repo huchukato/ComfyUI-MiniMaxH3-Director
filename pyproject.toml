@@ -13,8 +13,8 @@ classifiers = [
 ]
 
 [project.urls]
-Repository = "https://github.com/huchukato/ComfyUI-MiniMaxH3-Director"
-"Bug Tracker" = "https://github.com/huchukato/ComfyUI-MiniMaxH3-Director/issues"
+Repository = "https://github.com/huchukato/ComfyUI-MiniMaxH3-Director-Enhanced"
+"Bug Tracker" = "https://github.com/huchukato/ComfyUI-MiniMaxH3-Director-Enhanced/issues"
 
 [tool.comfy]
 # Must match the publisher you create at https://registry.comfy.org
