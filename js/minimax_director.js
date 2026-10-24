@@ -12947,6 +12947,19 @@ class TimelineEditor {
     modelInput.style.width = "150px";
     modelInput.style.textAlign = "left";
 
+    // qwenvl provider: the GGUF models on disk as a dropdown — the same scan the
+    // discovery runs server-side, so a pick here is always a name it accepts.
+    const modelSelect = document.createElement("select");
+    modelSelect.className = "mmxd-settings-select";
+    modelSelect.style.width = "150px";
+    const modelSelectRow = this._makeSettingRow("Model", modelSelect);
+    modelSelectRow.style.display = "none";
+    modelSelect.addEventListener("change", () => {
+      this.timeline.analyzeModel = modelSelect.value === "" ? "" : modelSelect.value;
+      modelInput.value = this.timeline.analyzeModel;
+      this.commitChanges(true);
+    });
+
     // A cloud endpoint needs a bearer token, and this row is the only part of the panel
     // that is NOT written to the timeline — see ANALYZE_KEY_SETTING. type=password so it
     // is not readable over a shoulder or in the screenshots people attach to issues.
@@ -12977,6 +12990,28 @@ class TimelineEditor {
       // Local servers want no key, so the row would only be one more thing to wonder
       // about; a reverse proxy in front of one is what 'custom' is for.
       keyRow.style.display = (prov === "custom") ? "" : "none";
+      if (prov === "qwenvl") {
+        api.fetchApi("/minimax_director/llm_models").then(r => r.json()).then(data => {
+          const models = (data && data.models) || [];
+          if (!models.length) return;
+          modelSelect.replaceChildren();
+          const auto = document.createElement("option");
+          auto.value = "";
+          auto.textContent = "(auto-discover)";
+          modelSelect.appendChild(auto);
+          for (const name of models) {
+            const opt = document.createElement("option");
+            opt.value = name;
+            opt.textContent = name.replace(/\.gguf$/i, "");
+            modelSelect.appendChild(opt);
+          }
+          modelSelect.value = models.includes(this.timeline.analyzeModel) ? this.timeline.analyzeModel : "";
+          modelSelectRow.style.display = "";
+          modelRow.style.display = "none";
+        }).catch(() => {});
+      } else {
+        modelSelectRow.style.display = "none";
+      }
     };
 
     provSelect.addEventListener("change", (e) => {
@@ -13000,6 +13035,7 @@ class TimelineEditor {
 
     menu.appendChild(this._makeSettingRow("Provider", provSelect));
     menu.appendChild(urlRow);
+    menu.appendChild(modelSelectRow);
     menu.appendChild(modelRow);
     menu.appendChild(keyRow);
 

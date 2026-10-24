@@ -620,6 +620,26 @@ def _qwenvl_module():
     return None
 
 
+def _scan_llm_gguf_files():
+    """The standalone GGUF models visible in the LLM model paths — the exact
+    names the qwenvl Analyze discovery accepts (mmproj/mtp sidecars excluded)."""
+    from pathlib import Path
+    found = set()
+    try:
+        for root in folder_paths.get_folder_paths("LLM"):
+            for p in Path(root).rglob("*.gguf"):
+                # same convention as QwenVL-Mod's own model list: mmproj files are
+                # vision projectors and mtp files are draft sidecars — neither is
+                # a standalone model
+                low = p.name.lower()
+                if "mmproj" in low or low.startswith("mtp"):
+                    continue
+                found.add(p.name)
+    except Exception:
+        pass
+    return sorted(found)
+
+
 def _qwenvl_generate(images_b64, prompt, system_prompt, model_name, max_tokens):
     """One Analyze round-trip through the QwenVL-Mod GGUF enhancer, in-process.
 
@@ -638,20 +658,7 @@ def _qwenvl_generate(images_b64, prompt, system_prompt, model_name, max_tokens):
     model_name = (model_name or "").strip()
     if not model_name:
         # Zero-config: one GGUF in the LLM model paths is unambiguous — use it.
-        from pathlib import Path
-        try:
-            found = set()
-            for root in folder_paths.get_folder_paths("LLM"):
-                for p in Path(root).rglob("*.gguf"):
-                    # same convention as QwenVL-Mod's own model list: mmproj files are
-                    # vision projectors and mtp files are draft sidecars — neither is
-                    # a standalone model
-                    low = p.name.lower()
-                    if "mmproj" in low or low.startswith("mtp"):
-                        continue
-                    found.add(p.name)
-        except Exception:
-            found = set()
+        found = _scan_llm_gguf_files()
         if len(found) == 1:
             model_name = next(iter(found))
             log.info("[MiniMaxDirector] qwenvl Analyze: no model set — using the only "
@@ -941,6 +948,13 @@ async def unload_model(provider, base_url, model, api_key=None):
         log.debug("[MiniMaxDirector] could not reach %s to unload '%s': %s",
                   base_url, model, e)
         return False
+
+
+@PromptServer.instance.routes.get("/minimax_director/llm_models")
+async def llm_models_endpoint(request):
+    """The standalone GGUF models the qwenvl Analyze discovery accepts — the
+    Analyze settings' model dropdown lists exactly these file names."""
+    return web.json_response({"models": _scan_llm_gguf_files()})
 
 
 @PromptServer.instance.routes.post("/minimax_director/unload_ollama")
